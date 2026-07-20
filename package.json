@@ -1,0 +1,17 @@
+{
+  "name": "ryvra-pay",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Ryvra Pay programmable stablecoin rails baseline",
+  "packageManager": "pnpm@10.16.0",
+  "scripts": {
+    "lint": "pnpm typecheck",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "pnpm build && node --test dist/test/**/*.spec.js",
+    "build": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.14",
+    "typescript": "^5.9.2"
+  }
+}
