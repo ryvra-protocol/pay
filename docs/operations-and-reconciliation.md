@@ -3,7 +3,7 @@
 ## Reconciliation flow
 
 1. Ingest settlement and ledger snapshots
-2. Match by correlation IDs (`intentId`, posting reference, settlement reference)
+2. Match by correlation IDs (`reference_id`, `correlation_id`, settlement reference)
 3. Detect mismatches (amount, state, missing acknowledgments)
 4. Open reconciliation exceptions with reason code and owner
 5. Resolve via replay, compensation, or operational escalation

@@ -21,6 +21,13 @@ It integrates cleanly with:
 
 `client/API -> pay service -> policy decision -> ledger posting -> settlement state updates`
 
+Canonical alignment baseline:
+
+- payment states: `created | authorized | executing | settled | failed | reversed`
+- idempotency deduplication key: `reference_id + idempotency_key`
+- policy `DENY` decisions require non-empty machine-readable `reason_codes`
+- event envelope fields: `event_id`, `correlation_id`, `reference_id`, `event_type`, `timestamp`, `payload`
+
 ## Status
 
 **Status: early draft / not production-ready.**

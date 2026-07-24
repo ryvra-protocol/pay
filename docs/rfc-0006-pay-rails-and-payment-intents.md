@@ -14,21 +14,22 @@ A payment intent is an immutable business request with append-only lifecycle upd
 
 Required fields:
 
-- `intentId`: globally unique identifier
-- `idempotencyKey`: caller-provided deduplication key
+- `intent_id`: globally unique identifier
+- `reference_id`: business reference identifier for lifecycle correlation and deduplication
+- `idempotency_key`: caller-provided deduplication key
 - `kind`: `payout | collection | treasury_transfer`
 - `sourceAccountId`
 - `destinationAccountId`
 - `assetId`
 - `amount`
-- `reasonCode`
+- `reason_code`
 - `metadata`
-- `createdAt`
+- `created_at`
 
 ## Idempotency keys and retry semantics
 
 - Calls creating or advancing intents MUST include an idempotency key.
-- The tuple `(operation, idempotencyKey, callerId)` MUST map to a single canonical result.
+- The tuple `(reference_id, idempotency_key)` MUST map to a single canonical result for side-effect deduplication.
 - Retries with the same tuple MUST return the same success/failure payload without re-executing side effects.
 - Retries with same key but different payload MUST fail with an idempotency conflict.
 - Idempotency records MUST be retained for a configurable TTL suitable for settlement replay and reconciliation.
@@ -53,7 +54,7 @@ Policy checks are required at:
 - authorization gate (`created -> authorized`)
 - execution gate (`authorized -> executing`)
 
-If policy denies, transition to `failed` with reason code and policy evidence reference.
+If policy denies, transition to `failed` with non-empty machine-readable `reason_codes` and policy evidence reference.
 
 ## Ledger posting requirements by transition
 
@@ -69,18 +70,17 @@ No transition may mutate or delete prior records.
 
 For each successful state transition, emit at least one event containing:
 
-- `eventId`
-- `intentId`
-- `fromState`
-- `toState`
-- `reasonCode`
-- `occurredAt`
-- `correlationId`
+- `event_id`
+- `correlation_id`
+- `reference_id`
+- `event_type`
+- `timestamp`
+- `payload`
 
 Delivery requirements:
 
 - at-least-once delivery
-- idempotent consumers via `eventId`
+- idempotent consumers via `event_id`
 - retry with exponential backoff and dead-letter handling
 
 ## Failure and compensation model

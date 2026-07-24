@@ -1,17 +1,17 @@
 export interface IdempotencyRecord<TResponse = unknown> {
   operation: string;
-  callerId: string;
-  idempotencyKey: string;
+  reference_id: string;
+  idempotency_key: string;
   requestHash: string;
   response: TResponse;
-  createdAt: string;
+  created_at: string;
 }
 
 export interface IdempotencyStore {
   get<TResponse = unknown>(
     operation: string,
-    callerId: string,
-    idempotencyKey: string
+    reference_id: string,
+    idempotency_key: string
   ): Promise<IdempotencyRecord<TResponse> | null>;
 
   put<TResponse = unknown>(record: IdempotencyRecord<TResponse>): Promise<void>;
