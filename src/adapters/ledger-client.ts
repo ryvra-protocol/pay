@@ -1,7 +1,7 @@
 import type { PaymentIntent, PaymentState } from '../types/payment-intent.js';
 
 export interface LedgerPostingResult {
-  postingId: string;
+  ledger_event_id: string;
   resultingState: Extract<PaymentState, 'executing' | 'settled' | 'failed' | 'reversed'>;
 }
 

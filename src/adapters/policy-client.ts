@@ -1,9 +1,9 @@
 import type { PaymentIntent } from '../types/payment-intent.js';
 
 export interface PolicyDecision {
-  allowed: boolean;
-  reasonCode: string;
-  evidenceRef?: string;
+  decision: 'ALLOW' | 'DENY';
+  reason_codes: string[];
+  evidence_ref?: string;
 }
 
 export interface PolicyClient {

@@ -1,6 +1,6 @@
 export type PaymentKind = 'payout' | 'collection' | 'treasury_transfer';
 
-export type PaymentState =
+export type PaymentIntentState =
   | 'created'
   | 'authorized'
   | 'executing'
@@ -8,16 +8,20 @@ export type PaymentState =
   | 'failed'
   | 'reversed';
 
+export type PaymentState = PaymentIntentState;
+
 export interface PaymentIntent {
-  intentId: string;
-  idempotencyKey: string;
+  intent_id: string;
+  reference_id: string;
+  idempotency_key: string;
   kind: PaymentKind;
   sourceAccountId: string;
   destinationAccountId: string;
   assetId: string;
   amount: string;
-  reasonCode: string;
+  reason_code: string;
+  reason_codes?: string[];
   metadata?: Record<string, string>;
-  state: PaymentState;
-  createdAt: string;
+  state: PaymentIntentState;
+  created_at: string;
 }

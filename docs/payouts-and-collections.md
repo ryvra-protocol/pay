@@ -11,7 +11,7 @@
 
 ### Batch payout
 
-1. Submit batch envelope with per-item idempotency keys
+1. Submit batch envelope with per-item `reference_id` + `idempotency_key`
 2. Validate limits/risk at batch and item levels
 3. Execute item intents independently
 4. Produce per-item final states and batch summary outcome
@@ -45,7 +45,7 @@ All controls are subject to policy/legal review.
 
 | Scenario | Reason Code | Transition |
 | --- | --- | --- |
-| Standard payout success | `PAYOUT_OK` | `created -> authorized -> executing -> settled` |
-| Policy denial | `POLICY_DENY_LIMIT` | `created -> failed` |
-| Execution rail timeout | `RAIL_TIMEOUT` | `authorized -> executing -> failed` |
+| Standard payout success | `PAYMENT_PAYOUT_OK` | `created -> authorized -> executing -> settled` |
+| Policy denial | `POLICY_DENY_LIMIT_EXCEEDED` | `created -> failed` |
+| Execution rail timeout | `EXECUTION_RAIL_TIMEOUT` | `authorized -> executing -> failed` |
 | Post-settlement correction | `REVERSAL_REQUESTED` | `settled -> reversed` |

@@ -4,16 +4,17 @@ import type { PaymentIntent } from '../src/types/payment-intent.js';
 
 test('payment intent type-compatible baseline object can be created', () => {
   const intent: PaymentIntent = {
-    intentId: 'pi_1',
-    idempotencyKey: 'idem_1',
+    intent_id: 'pi_1',
+    reference_id: 'ref_1',
+    idempotency_key: 'idem_1',
     kind: 'payout',
     sourceAccountId: 'acct_src',
     destinationAccountId: 'acct_dst',
     assetId: 'usd_stable',
     amount: '100.00',
-    reasonCode: 'PAYOUT_OK',
+    reason_code: 'PAYMENT_PAYOUT_OK',
     state: 'created',
-    createdAt: new Date().toISOString()
+    created_at: new Date().toISOString()
   };
 
   assert.equal(intent.kind, 'payout');
