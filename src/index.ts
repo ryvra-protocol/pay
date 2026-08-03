@@ -5,6 +5,7 @@ export * from './types/unified-asset.js';
 export * from './service/state-machine.js';
 export * from './service/pay-service.js';
 export * from './service/idempotency-store.js';
+export * from './service/reconciliation.js';
 export * from './adapters/policy-client.js';
 export * from './adapters/ledger-client.js';
 export * from './adapters/unified-asset-boundary.js';

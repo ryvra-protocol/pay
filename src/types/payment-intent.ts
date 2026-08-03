@@ -12,6 +12,7 @@ export interface PaymentExecution {
   sponsor_account_id?: string;
   sponsor_chain?: string;
   sponsor_asset?: string;
+  allow_legacy_fallback?: boolean;
 }
 
 export type PaymentIntentState =
@@ -47,6 +48,8 @@ export interface AccountAbstractionBoundaryInput {
   execution?: Partial<PaymentExecution>;
   execution_mode?: PaymentExecutionMode;
   executionMode?: PaymentExecutionMode;
+  allow_legacy_fallback?: boolean;
+  allowLegacyFallback?: boolean;
   smart_account_id?: string;
   smartAccountId?: string;
   entry_point?: string;
