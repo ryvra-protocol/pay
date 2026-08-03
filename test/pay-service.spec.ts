@@ -38,6 +38,11 @@ function createIntent(overrides: Partial<PaymentIntent> = {}): PaymentIntent {
     kind: 'payout',
     sourceAccountId: 'acct_src',
     destinationAccountId: 'acct_dst',
+    asset: {
+      chain: 'eip155:1',
+      asset: 'usd_stable',
+      decimals: 2
+    },
     assetId: 'usd_stable',
     amount: '100.00',
     reason_code: 'PAYMENT_PAYOUT_OK',

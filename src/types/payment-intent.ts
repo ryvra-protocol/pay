@@ -1,3 +1,5 @@
+import type { UnifiedAssetBoundaryInput, UnifiedAssetReference } from './unified-asset.js';
+
 export type PaymentKind = 'payout' | 'collection' | 'treasury_transfer';
 
 export type PaymentIntentState =
@@ -17,6 +19,7 @@ export interface PaymentIntent {
   kind: PaymentKind;
   sourceAccountId: string;
   destinationAccountId: string;
+  asset: UnifiedAssetReference;
   assetId: string;
   amount: string;
   reason_code: string;
@@ -25,3 +28,37 @@ export interface PaymentIntent {
   state: PaymentIntentState;
   created_at: string;
 }
+
+export interface PaymentIntentBoundaryInput extends Omit<PaymentIntent, 'asset' | 'assetId'>, UnifiedAssetBoundaryInput {}
+
+export interface PaymentInvoice {
+  invoice_id: string;
+  reference_id: string;
+  sourceAccountId: string;
+  destinationAccountId: string;
+  amount: string;
+  asset: UnifiedAssetReference;
+  assetId: string;
+  created_at: string;
+  metadata?: Record<string, string>;
+}
+
+export interface InvoiceBoundaryInput
+  extends Omit<PaymentInvoice, 'asset' | 'assetId'>,
+    UnifiedAssetBoundaryInput {}
+
+export interface PaymentPayout {
+  payout_id: string;
+  reference_id: string;
+  sourceAccountId: string;
+  destinationAccountId: string;
+  amount: string;
+  asset: UnifiedAssetReference;
+  assetId: string;
+  created_at: string;
+  metadata?: Record<string, string>;
+}
+
+export interface PayoutBoundaryInput
+  extends Omit<PaymentPayout, 'asset' | 'assetId'>,
+    UnifiedAssetBoundaryInput {}
