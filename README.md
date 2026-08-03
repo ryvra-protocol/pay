@@ -56,3 +56,4 @@ Ryvra Pay depends on external contracts and service interfaces with:
 ## Migration notes
 
 - PR7 boundary migration notes: `docs/pr7-boundary-migration-notes.md`
+- PR8 boundary adoption notes: `docs/pr8-boundary-adoption-notes.md`

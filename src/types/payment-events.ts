@@ -16,6 +16,7 @@ export interface PaymentTransitionPayload {
   reason_code: string;
   reason_codes: string[];
   ledger_event_id?: string;
+  user_op_hash?: string;
 }
 
 export interface PaymentEvent extends CanonicalEventEnvelope<PaymentTransitionPayload> {}

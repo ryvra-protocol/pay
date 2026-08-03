@@ -15,7 +15,8 @@ test('payment event envelope contains canonical fields', () => {
       to_state: 'authorized',
       reason_code: 'PAYMENT_PAYOUT_OK',
       reason_codes: ['PAYMENT_PAYOUT_OK'],
-      ledger_event_id: 'le_1'
+      ledger_event_id: 'le_1',
+      user_op_hash: '0xuserop'
     }
   };
 
@@ -25,4 +26,5 @@ test('payment event envelope contains canonical fields', () => {
   assert.equal(typeof event.event_type, 'string');
   assert.equal(typeof event.timestamp, 'string');
   assert.equal(typeof event.payload, 'object');
+  assert.equal(event.payload.user_op_hash, '0xuserop');
 });
