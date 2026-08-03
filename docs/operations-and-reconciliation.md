@@ -31,9 +31,32 @@ Each exception should include timestamp, affected intent, severity, and remediat
 
 Track at minimum:
 
-- success rate
-- settlement latency
-- failed transitions
-- duplicate idempotency collisions
+- `pay_intent_total`
+- `pay_intent_failure_total`
+- `pay_reconciliation_mismatch_total`
+- `pay_time_to_settlement_ms`
 
 Recommended dimensions: asset, rail, flow type (`payout`, `collection`, `treasury_transfer`), and reason code.
+
+## Playbooks
+
+### Stuck payouts (prolonged `executing`)
+
+1. Confirm idempotency replay safety by checking `reference_id + idempotency_key`.
+2. Inspect latest lifecycle events for AA/legacy transition mode and reason code.
+3. If reason is settlement latency (`SETTLEMENT_LATENCY_TIMEOUT`), schedule retry and open escalation ticket.
+4. Keep intent state explicit (`executing` or `failed`) until settlement confirmation arrives.
+
+### Reconciliation mismatches
+
+1. Run reconciliation against latest settlement snapshot.
+2. Classify mismatch reason (`RECON_REFERENCE_MISMATCH`, `RECON_AMOUNT_MISMATCH`, `RECON_ASSET_MISMATCH`, `RECON_STATE_MISMATCH`).
+3. Emit reconciliation exception with owner + severity.
+4. Resolve by replay, compensation, or manual correction approval.
+
+### Manual remediation
+
+1. Capture exception evidence (intent ID, reference ID, reason code, timestamps).
+2. Execute approved remediation action (replay, compensating transfer, or reverse).
+3. Record append-only reconciliation event with operator ID and ticket link.
+4. Verify mismatch metric and failure metrics return to baseline after remediation.

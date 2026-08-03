@@ -132,10 +132,10 @@ test('adopts payout userOp tracking fields', () => {
     chainId: 'eip155:1',
     asset_id: 'usd_stable',
     asset_decimals: 2,
-    userOpHash: '0xuserop_payout'
+    userOpHash: '0xaabbccdd11'
   });
 
-  assert.equal(payout.user_op_hash, '0xuserop_payout');
+  assert.equal(payout.user_op_hash, '0xaabbccdd11');
 });
 
 test('maps AA-enabled intent into ERC-4337 execution request', () => {
@@ -154,22 +154,22 @@ test('maps AA-enabled intent into ERC-4337 execution request', () => {
     execution: {
       mode: 'erc4337',
       smart_account_id: 'sa_1',
-      entry_point: '0xentry',
+      entry_point: '0xaabbccdd',
       sponsorship_mode: 'paymaster',
       sponsor_account_id: 'acct_src'
     },
-    userOpHash: '0xuserop'
+    userOpHash: '0xaabbccdd'
   });
 
   const request = mapIntentToExecutionRequest(intent);
   assert.equal(request.mode, 'erc4337');
   if (request.mode === 'erc4337') {
     assert.equal(request.aa.smart_account_id, 'sa_1');
-    assert.equal(request.aa.entry_point, '0xentry');
+    assert.equal(request.aa.entry_point, '0xaabbccdd');
     assert.equal(request.aa.sponsor_asset, 'usd_stable');
     assert.equal(request.aa.sponsor_chain, 'eip155:1');
   }
-  assert.equal(request.user_op_hash, '0xuserop');
+  assert.equal(request.user_op_hash, '0xaabbccdd');
 });
 
 test('falls back to legacy execution request when AA mode is not provided', () => {
@@ -212,9 +212,72 @@ test('rejects incompatible sponsorship chain at ingress', () => {
         created_at: '2026-01-01T00:00:00.000Z',
         execution_mode: 'erc4337',
         smart_account_id: 'sa_bad',
-        entry_point: '0xentry',
+        entry_point: '0xaabbccdd',
         sponsor_chain: 'eip155:10'
       }),
     /sponsor_chain must match payment asset chain/
+  );
+});
+
+test('normalizes canonical asset and userOp values deterministically', () => {
+  const intent = adoptPaymentIntentBoundary({
+    intent_id: 'pi_norm_1',
+    reference_id: 'ref_norm_1',
+    idempotency_key: 'idem_norm_1',
+    kind: 'collection',
+    sourceAccountId: 'acct_src',
+    destinationAccountId: 'acct_dst',
+    asset: { chain: 'EIP155:1', asset: 'USD_STABLE', decimals: 2 },
+    amount: '11.00',
+    reason_code: 'PAYMENT_COLLECTION_OK',
+    state: 'authorized',
+    created_at: '2026-01-01T00:00:00.000Z',
+    execution_mode: 'erc4337',
+    smart_account_id: 'smart_1',
+    entry_point: '0xABCD1234',
+    userOpHash: '0xAABBCCDD'
+  });
+
+  assert.deepEqual(intent.asset, { chain: 'eip155:1', asset: 'usd_stable', decimals: 2 });
+  assert.equal(intent.user_op_hash, '0xaabbccdd');
+  assert.equal(intent.execution?.entry_point, '0xabcd1234');
+});
+
+test('rejects invalid asset boundary matrix cases', () => {
+  assert.throws(
+    () => resolveUnifiedAssetReference({ chain: 'EIP1551', assetId: 'usd_stable', decimals: 2 }),
+    /chain must match namespace:reference in lowercase/
+  );
+  assert.throws(
+    () => resolveUnifiedAssetReference({ chain: 'eip155:1', assetId: 'USD Stable', decimals: 2 }),
+    /asset must be lowercase/
+  );
+  assert.throws(
+    () => resolveUnifiedAssetReference({ chain: 'eip155:1', assetId: 'usd_stable', decimals: 39 }),
+    /decimals must be an integer between 0 and 38/
+  );
+});
+
+test('rejects AA capability assumptions in legacy mode', () => {
+  assert.throws(
+    () =>
+      adoptPaymentIntentBoundary({
+        intent_id: 'pi_legacy_bad',
+        reference_id: 'ref_legacy_bad',
+        idempotency_key: 'idem_legacy_bad',
+        kind: 'payout',
+        sourceAccountId: 'acct_src',
+        destinationAccountId: 'acct_dst',
+        chain: 'eip155:1',
+        assetId: 'usd_stable',
+        decimals: 2,
+        amount: '13.00',
+        reason_code: 'PAYMENT_PAYOUT_OK',
+        state: 'authorized',
+        created_at: '2026-01-01T00:00:00.000Z',
+        execution_mode: 'legacy',
+        smart_account_id: 'smart_legacy_conflict'
+      }),
+    /AA execution fields are not allowed when execution mode is legacy/
   );
 });
