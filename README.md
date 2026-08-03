@@ -52,3 +52,7 @@ Ryvra Pay depends on external contracts and service interfaces with:
 - `asset-registry`: supported assets and transfer constraints
 - `ledger-settlement`: posting and settlement finality data
 - `policy-risk`: policy and risk decisions at authorization and execution points
+
+## Migration notes
+
+- PR7 boundary migration notes: `docs/pr7-boundary-migration-notes.md`
