@@ -6,7 +6,7 @@
   "packageManager": "pnpm@10.16.0",
   "scripts": {
     "lint": "pnpm typecheck",
-    "lint:openapi": "pnpm dlx @redocly/cli@1.27.1 lint openapi/pay.openapi.yaml",
+    "lint:openapi": "pnpm --package=@redocly/cli@1.27.1 dlx redocly lint openapi/pay.openapi.yaml",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "pnpm build && node --test dist/test/**/*.spec.js",
     "build": "tsc -p tsconfig.json"

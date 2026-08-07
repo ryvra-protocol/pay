@@ -17,16 +17,24 @@ info:
     - Deprecated fields/endpoints are announced in the contract changelog and kept during the migration window.
 
     Contract changelog location: `/docs/api-contract-changelog.md`.
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
 servers:
   - url: /
 security:
   - bearerAuth: []
 tags:
   - name: invoices
+    description: Invoice retrieval and invoice summary surfaces.
   - name: payouts
+    description: Payout retrieval and payout summary surfaces.
   - name: reconciliation
+    description: Reconciliation item reads and reconciliation actions.
   - name: overview
+    description: High-level operational and aggregate read views.
   - name: intents
+    description: Payment intent creation and lifecycle transitions.
 x-pay-versioning-policy:
   env_var: PAY_API_VERSION
   request_header: x-pay-api-version
@@ -171,11 +179,11 @@ paths:
                         assetId: usd_stable
                         state: executing
                         reason_code: PAYMENT_PAYOUT_OK
-                        user_op_hash: 0xaabbccddee
+                        user_op_hash: '0xaabbccddee'
                         execution:
                           mode: erc4337
                           smart_account_id: sa_123
-                          entry_point: 0xaabbccdd
+                          entry_point: '0xaabbccdd'
                           sponsorship_mode: paymaster
                           sponsor_account_id: acct_treasury_1
                           sponsor_chain: eip155:1
@@ -343,6 +351,7 @@ paths:
                   value:
                     as_of: '2026-08-07T12:05:00.000Z'
                     invoices:
+                      as_of: '2026-08-07T12:05:00.000Z'
                       total_count: 124
                       total_amount: '18203.15'
                       by_state:
@@ -353,6 +362,7 @@ paths:
                         failed: 4
                         reversed: 0
                     payouts:
+                      as_of: '2026-08-07T12:05:00.000Z'
                       total_count: 77
                       total_amount: '9050.00'
                       by_state:
@@ -379,7 +389,7 @@ paths:
       summary: Legacy subscriptions endpoint
       description: |
         Deprecated endpoint. Subscriptions are not part of the current Pay contract surface.
-        Canonical behavior is `410 Gone`.
+        Canonical behavior returns an empty list while legacy clients migrate; some deployments may return `410 Gone`.
       deprecated: true
       operationId: getSubscriptions
       parameters:
@@ -387,6 +397,21 @@ paths:
         - $ref: '#/components/parameters/XCorrelationIdHeader'
         - $ref: '#/components/parameters/XPayApiVersionHeader'
       responses:
+        '200':
+          description: Deprecated subscriptions response (empty collection)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeprecatedSubscriptionsResponse'
+              examples:
+                empty:
+                  value:
+                    data: []
+                    pagination:
+                      page: 1
+                      page_size: 50
+                      total_items: 0
+                      total_pages: 0
         '410':
           description: Subscriptions endpoint has been removed
           content:
@@ -438,7 +463,7 @@ paths:
                   execution:
                     mode: erc4337
                     smart_account_id: sa_123
-                    entry_point: 0xaabbccdd
+                    entry_point: '0xaabbccdd'
                     sponsorship_mode: paymaster
                     sponsor_account_id: acct_treasury_1
                     allow_legacy_fallback: true
@@ -978,7 +1003,7 @@ components:
           type: string
         amount:
           type: string
-          pattern: '^-?[0-9]+(\\.[0-9]{1,18})?$'
+          pattern: '^-?[0-9]+(\.[0-9]{1,18})?$'
         asset:
           $ref: '#/components/schemas/UnifiedAssetReference'
         assetId:
@@ -1025,7 +1050,7 @@ components:
           type: string
         amount:
           type: string
-          pattern: '^-?[0-9]+(\\.[0-9]{1,18})?$'
+          pattern: '^-?[0-9]+(\.[0-9]{1,18})?$'
         asset:
           $ref: '#/components/schemas/UnifiedAssetReference'
         reason_code:
@@ -1054,7 +1079,7 @@ components:
           $ref: '#/components/schemas/SettlementState'
         amount:
           type: string
-          pattern: '^-?[0-9]+(\\.[0-9]{1,18})?$'
+          pattern: '^-?[0-9]+(\.[0-9]{1,18})?$'
         asset:
           $ref: '#/components/schemas/UnifiedAssetReference'
         observed_at:
@@ -1145,7 +1170,7 @@ components:
           type: string
         amount:
           type: string
-          pattern: '^-?[0-9]+(\\.[0-9]{1,18})?$'
+          pattern: '^-?[0-9]+(\.[0-9]{1,18})?$'
         asset:
           $ref: '#/components/schemas/UnifiedAssetReference'
         assetId:
@@ -1186,7 +1211,7 @@ components:
           type: string
         amount:
           type: string
-          pattern: '^-?[0-9]+(\\.[0-9]{1,18})?$'
+          pattern: '^-?[0-9]+(\.[0-9]{1,18})?$'
         asset:
           $ref: '#/components/schemas/UnifiedAssetReference'
         assetId:
@@ -1214,10 +1239,10 @@ components:
       properties:
         expected:
           type: string
-          pattern: '^-?[0-9]+(\\.[0-9]{1,18})?$'
+          pattern: '^-?[0-9]+(\.[0-9]{1,18})?$'
         observed:
           type: string
-          pattern: '^-?[0-9]+(\\.[0-9]{1,18})?$'
+          pattern: '^-?[0-9]+(\.[0-9]{1,18})?$'
 
     ReconciliationItem:
       type: object
@@ -1305,6 +1330,19 @@ components:
         pagination:
           $ref: '#/components/schemas/PaginationMeta'
 
+    DeprecatedSubscriptionsResponse:
+      type: object
+      required: [data, pagination]
+      properties:
+        data:
+          type: array
+          maxItems: 0
+          items:
+            type: object
+            additionalProperties: true
+        pagination:
+          $ref: '#/components/schemas/PaginationMeta'
+
     InvoiceSummary:
       type: object
       required: [as_of, total_count, total_amount, by_state]
@@ -1317,7 +1355,7 @@ components:
           minimum: 0
         total_amount:
           type: string
-          pattern: '^-?[0-9]+(\\.[0-9]{1,18})?$'
+          pattern: '^-?[0-9]+(\.[0-9]{1,18})?$'
         by_state:
           $ref: '#/components/schemas/PaymentStateCounts'
 
@@ -1333,7 +1371,7 @@ components:
           minimum: 0
         total_amount:
           type: string
-          pattern: '^-?[0-9]+(\\.[0-9]{1,18})?$'
+          pattern: '^-?[0-9]+(\.[0-9]{1,18})?$'
         by_state:
           $ref: '#/components/schemas/PaymentStateCounts'
 
