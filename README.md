@@ -57,3 +57,9 @@ Ryvra Pay depends on external contracts and service interfaces with:
 
 - PR7 boundary migration notes: `docs/pr7-boundary-migration-notes.md`
 - PR8 boundary adoption notes: `docs/pr8-boundary-adoption-notes.md`
+
+## API contract
+
+- canonical OpenAPI contract: `openapi/pay.openapi.yaml`
+- contract changelog and release notes: `docs/api-contract-changelog.md`
+- version negotiation: `x-pay-api-version` request header (default resolved from `PAY_API_VERSION`)

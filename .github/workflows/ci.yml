@@ -37,3 +37,6 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+      - name: Lint OpenAPI contract
+        run: pnpm lint:openapi
